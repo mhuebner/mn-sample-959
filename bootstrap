@@ -1,0 +1,3 @@
+#!/bin/sh
+set -euo pipefail
+./mn-sample-959 -Xmx512m

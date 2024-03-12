@@ -1,0 +1,100 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version "8.1.1"
+    id 'io.micronaut.application' version "4.3.3"
+    id 'io.micronaut.aot' version "4.3.3"
+    id 'groovy'
+    id 'project-report'
+}
+
+group = 'mn.sample'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation('com.google.code.gson:gson:2.8.9')
+    annotationProcessor('io.micronaut:micronaut-http-validation')
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    implementation("io.micronaut:micronaut-http-client-jdk")
+    implementation("io.micronaut.aws:micronaut-aws-lambda-events-serde")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+
+    implementation("io.micronaut:micronaut-jackson-databind")
+
+    runtimeOnly('ch.qos.logback:logback-classic')
+    runtimeOnly('org.yaml:snakeyaml')
+    //compileOnly('org.graalvm.nativeimage:svm')
+
+    implementation('io.micronaut.aws:micronaut-function-aws')
+    implementation('io.micronaut.aws:micronaut-function-aws-custom-runtime')
+
+    //implementation('io.sentry:sentry-logback:5.5.1')
+
+    testImplementation('org.spockframework:spock-core') {
+        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    }
+
+    testImplementation 'io.micronaut:micronaut-inject-groovy'
+    testImplementation 'io.micronaut.test:micronaut-test-spock'
+    testImplementation "org.mockito:mockito-core:3.+"
+    testImplementation "org.mockito:mockito-inline:3.+"
+}
+
+application {
+    mainClass.set('mn.sample.transformer.EventTransformationRuntime')
+}
+
+tasks.named('assemble') {
+    dependsOn(':shadowJar')
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    version = "4.3.4"
+    runtime("lambda_provided")
+    testRuntime("spock2")
+    processing {
+        incremental(true)
+        annotations("cbet.*")
+    }
+    aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+    }
+}
+
+
+// modify the dockerfile to use the correct glibc
+tasks.named("dockerfileNative") {
+    editDockerfile {
+        replace(
+                "RUN yum install -y gcc gcc-c++ glibc-devel curl-minimal bash zlib zlib-devel zlib-static zip tar gzip",
+                "RUN yum install -y gcc gcc-c++ glibc-devel glibc-langpack-en curl-minimal bash zlib zlib-devel zlib-static zip tar gzip"
+        )
+    }
+}
+
+tasks.named("dockerfileNative") {
+    baseImage = "amazonlinux:2023"
+    jdkVersion = "21"
+    args(
+            "-XX:MaximumHeapSizePercent=80",
+            "-Dio.netty.allocator.numDirectArenas=0",
+            "-Dio.netty.noPreferDirect=true"
+    )
+}
