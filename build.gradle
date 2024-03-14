@@ -58,7 +58,7 @@ micronaut {
     testRuntime("spock2")
     processing {
         incremental(true)
-        annotations("cbet.*")
+        annotations("mn.sample.transformer.*")
     }
 }
 
