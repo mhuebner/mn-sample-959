@@ -9,7 +9,6 @@ plugins {
 group = 'mn.sample'
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
