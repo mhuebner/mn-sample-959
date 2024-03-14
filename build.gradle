@@ -13,27 +13,16 @@ repositories {
 
 dependencies {
     annotationProcessor('io.micronaut:micronaut-http-validation')
+    // Serialization
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
-    implementation("io.micronaut:micronaut-http-client-jdk")
     implementation("io.micronaut.aws:micronaut-aws-lambda-events-serde")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
 
     runtimeOnly('ch.qos.logback:logback-classic')
-    //compileOnly('org.graalvm.nativeimage:svm')
 
     implementation('io.micronaut.aws:micronaut-function-aws')
     implementation('io.micronaut.aws:micronaut-function-aws-custom-runtime')
-
-    //implementation('io.sentry:sentry-logback:5.5.1')
-
-    testImplementation('org.spockframework:spock-core') {
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
-    }
-
-    testImplementation 'io.micronaut:micronaut-inject-groovy'
-    testImplementation 'io.micronaut.test:micronaut-test-spock'
-    testImplementation "org.mockito:mockito-core:3.+"
-    testImplementation "org.mockito:mockito-inline:3.+"
+    runtimeOnly("io.micronaut:micronaut-http-client-jdk")
 }
 
 application {
