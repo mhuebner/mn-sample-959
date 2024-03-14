@@ -24,7 +24,6 @@ dependencies {
     implementation("io.micronaut:micronaut-jackson-databind")
 
     runtimeOnly('ch.qos.logback:logback-classic')
-    runtimeOnly('org.yaml:snakeyaml')
     //compileOnly('org.graalvm.nativeimage:svm')
 
     implementation('io.micronaut.aws:micronaut-function-aws')
