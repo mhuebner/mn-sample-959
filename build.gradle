@@ -21,8 +21,6 @@ dependencies {
     implementation("io.micronaut.aws:micronaut-aws-lambda-events-serde")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
 
-    implementation("io.micronaut:micronaut-jackson-databind")
-
     runtimeOnly('ch.qos.logback:logback-classic')
     //compileOnly('org.graalvm.nativeimage:svm')
 
